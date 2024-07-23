@@ -53,6 +53,7 @@ class AdminPanelProvider extends PanelProvider
                 ),
                 // ->showAttribution(false),
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->sidebarCollapsibleOnDesktop()
             ->middleware([
                 EncryptCookies::class,
