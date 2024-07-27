@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('gate_passes', function (Blueprint $table) {
             $table->id();
+            // $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->string('slip_no');
+            $table->string('box');
+            $table->date('date');
+            $table->boolean('status');
             $table->timestamps();
         });
     }

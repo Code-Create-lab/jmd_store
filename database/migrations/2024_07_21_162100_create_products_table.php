@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('marka');
             $table->string('box');
             $table->string('rate');
+            $table->date('date');
+            $table->boolean('status');
             $table->timestamps();
         });
     }
