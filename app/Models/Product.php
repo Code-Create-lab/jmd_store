@@ -10,5 +10,12 @@ class Product extends Model
     use HasFactory;
 
     protected $guarded = [] ;
+
+
+    public function gatePasses(){
+
+        return $this->belongsToMany(GatePass::class,'gate_pass_product')->withTimestamps();
+
+    }
 }
 
