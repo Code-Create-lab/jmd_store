@@ -23,4 +23,6 @@ class GatePassHasProduct extends Model
     {
         return $this->belongsToMany(GatePass::class);
     }
+
+   
 }
