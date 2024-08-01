@@ -29,9 +29,12 @@ class GatePassResource extends Resource
                 Forms\Components\TextInput::make('slip_no')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('box')
-                    ->required()
-                    ->maxLength(255),
+                // Forms\Components\TextInput::make('box')
+                //     ->required()
+                //     ->maxLength(255),
+                // Forms\Components\TextInput::make('total_amount')
+                //     ->required()
+                //     ->maxLength(255),
                 Forms\Components\DatePicker::make('date')
                     ->required(),
                 Forms\Components\Toggle::make('status')
@@ -45,8 +48,8 @@ class GatePassResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('slip_no')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('box')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('box'),
+                Tables\Columns\TextColumn::make('total_amount'),
                 Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->sortable(),
