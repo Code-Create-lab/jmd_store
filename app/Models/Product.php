@@ -17,5 +17,6 @@ class Product extends Model
         return $this->belongsToMany(GatePass::class,'gate_pass_product')->withTimestamps();
 
     }
+
 }
 

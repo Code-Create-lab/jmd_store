@@ -38,6 +38,7 @@ class GatePassResource extends Resource
                 Forms\Components\DatePicker::make('date')
                     ->required(),
                 Forms\Components\Toggle::make('status')
+                    ->default(true)
                     ->required(),
             ]);
     }

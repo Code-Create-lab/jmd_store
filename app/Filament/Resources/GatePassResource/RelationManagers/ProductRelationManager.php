@@ -44,6 +44,7 @@ class ProductRelationManager extends RelationManager
                 Forms\Components\DatePicker::make('date')
                     ->required(),
                 Forms\Components\Toggle::make('status')
+                    ->default(true)
                     ->required(),
             ]);
     }
@@ -70,6 +71,38 @@ class ProductRelationManager extends RelationManager
 
 
                         return $record->rate * ($record->pivot->box);
+                    }),
+                TextColumn::make('durations')
+                    ->label('Total Durations')
+                    ->getStateUsing(function ($record, ?Product $product) {
+
+                        // dd($product->gatePasses[0]->date,$product->date);
+                        $productAddedDate =  $product->date;
+                        $productGatePassDate =  $product->gatePasses[0]->date;
+                        // Convert the string dates to Carbon instances
+                        $productAddedDateCarbon = Carbon::parse($productAddedDate);
+                        $productGatePassDateCarbon = Carbon::parse($productGatePassDate);
+
+                        // Get the year and month of both dates
+                        $productAddedYearMonth = $productAddedDateCarbon->format('Y-m');
+                        $productGatePassYearMonth = $productGatePassDateCarbon->format('Y-m');
+
+                        // Calculate the difference in months between the two dates
+                        $diffInMonths = $productAddedDateCarbon->diffInMonths($productGatePassDateCarbon);
+
+                        // If dates are in different months, adjust the result to ensure any partial month counts as a full month
+                        if ($productAddedYearMonth !== $productGatePassYearMonth) {
+                            $diffInMonths = (int)$productAddedDateCarbon->startOfMonth()->diffInMonths($productGatePassDateCarbon->endOfMonth()) + 1;
+                        }else{
+
+                            $diffInMonths =1;
+
+                        }
+
+
+
+
+                        return $diffInMonths > 0 ? $diffInMonths. " Months" : $diffInMonths ." Month";
                     }),
             ])
             ->filters([
@@ -115,25 +148,25 @@ class ProductRelationManager extends RelationManager
                             //     // dd($selectedProduct, "adasd");
                             // })
                             ->live(onBlur: true),
-                        TextInput::make('amount')
-                            // ->afterStateUpdated(function (Set $set, Get $get) {
-                            //     $box = $get('box');
-                            //     $product = $get('product_id'); // Use the stored product_id
+                        // TextInput::make('amount')
+                        //     // ->afterStateUpdated(function (Set $set, Get $get) {
+                        //     //     $box = $get('box');
+                        //     //     $product = $get('product_id'); // Use the stored product_id
 
-                            //     // Debug output for product and box
-                            //     // dd($product, $box);
+                        //     //     // Debug output for product and box
+                        //     //     // dd($product, $box);
 
-                            //     $product_data = Product::find($product);
-                            //     if ($product_data) {
-                            //         $productDate = $product_data->date;
-                            //         $currentDate = Carbon::now();
-                            //         $difference = $currentDate->diffInMonths($productDate);
+                        //     //     $product_data = Product::find($product);
+                        //     //     if ($product_data) {
+                        //     //         $productDate = $product_data->date;
+                        //     //         $currentDate = Carbon::now();
+                        //     //         $difference = $currentDate->diffInMonths($productDate);
 
-                            //         // Debug output for difference
-                            //         // dd($difference);
-                            //     }
-                            // }),
-                            ,
+                        //     //         // Debug output for difference
+                        //     //         // dd($difference);
+                        //     //     }
+                        //     // }),
+                        //     ,
                     ]),
             ])
             ->actions([

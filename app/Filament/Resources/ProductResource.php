@@ -39,8 +39,11 @@ class ProductResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('date')
+                    //     ->native(false)
+                    //  ->minDate(now())
                     ->required(),
                 Forms\Components\Toggle::make('status')
+                     ->default(true)
                     ->required(),
             ]);
     }
