@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
+use App\Models\GatePassHasProduct;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -43,7 +44,7 @@ class ProductResource extends Resource
                     //  ->minDate(now())
                     ->required(),
                 Forms\Components\Toggle::make('status')
-                     ->default(true)
+                    ->default(true)
                     ->required(),
             ]);
     }
@@ -60,6 +61,25 @@ class ProductResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('box')
                     ->label('Balance(Boxes)')
+                    // ->getStateUsing(function($record){
+                    //     // dd($record);
+                    //     $gatepassProduct = GatePassHasProduct::where('product_id',$record->id)->sum('box');
+
+                    //     // dd($gatepassProduct);
+                    //     $box = $record->box - $gatepassProduct;
+                    //     return $box;
+                    // })
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('remaining_box')
+                    ->label('Remaining Boxes')
+                    // ->getStateUsing(function($record){
+                    //     // dd($record);
+                    //     $gatepassProduct = GatePassHasProduct::where('product_id',$record->id)->sum('box');
+
+                    //     // dd($gatepassProduct);
+                    //     $box = $record->box - $gatepassProduct;
+                    //     return $box;
+                    // })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('rate')
                     ->searchable(),

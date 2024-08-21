@@ -10,26 +10,31 @@ class GatePass extends Model
 {
     use HasFactory;
 
-    protected $guarded = [] ;
+    protected $guarded = [];
 
 
-    public function product(){
+    public function product()
+    {
 
-        return $this->belongsToMany(Product::class,'gate_pass_product')->withPivot(['box'])->withTimestamps();
-
+        return $this->belongsToMany(Product::class, 'gate_pass_products')->withPivot(['box'])->withTimestamps();
     }
 
     protected static function boot()
     {
         parent::boot();
 
+        // static::creating(function ($model) {
+        //     dd($model->product);
+        // });
+
         // This will be called on every model call (when model is instantiated)
         static::retrieved(function ($model) {
+            // dd($model);
 
-            $totalRate =0;
+            $totalRate = 0;
             $totalBox = 0;
             // Ensure products are loaded and not null
-            foreach($model->product as $product){
+            foreach ($model->product as $product) {
 
                 $productAddedDate = $product->date;
                 $productGatePassDate = $model->date;
@@ -47,20 +52,23 @@ class GatePass extends Model
                 // If dates are in different months, adjust the result to ensure any partial month counts as a full month
                 if ($productAddedYearMonth !== $productGatePassYearMonth) {
                     $diffInMonths = (int)$productAddedDateCarbon->startOfMonth()->diffInMonths($productGatePassDateCarbon->endOfMonth()) + 1;
-                }else{
+                } else {
 
-                    $diffInMonths =1;
-
+                    $diffInMonths = 1;
                 }
-                $totalRate += $product->rate * $product->pivot->box * $diffInMonths ;
+                $totalRate += $product->rate * $product->pivot->box * $diffInMonths;
                 $totalBox += $product->pivot->box;
+
+                $productData = Product::find($product->id);
+                $productData->remaining_box = $productData->box - $product->pivot->box;
+                $productData->save();
                 // dd($diffInMonths,$product, $model);
             }
 
             // $otalRrate = $model->product->sum('rate') * $model->product->sum('rate' pivot_box;
 
-            $model->total_amount= $totalRate;
-            $model->box= $totalBox;
+            $model->total_amount = $totalRate;
+            $model->box = $totalBox;
 
             $model->save();
             // dd($totalRate);
@@ -73,5 +81,4 @@ class GatePass extends Model
             // \Log::info('Model retrieved:', ['model' => $model]);
         });
     }
-
 }

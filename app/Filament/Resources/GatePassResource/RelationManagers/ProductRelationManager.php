@@ -90,11 +90,12 @@ class ProductRelationManager extends RelationManager
                         // Calculate the difference in months between the two dates
                         $diffInMonths = $productAddedDateCarbon->diffInMonths($productGatePassDateCarbon);
 
+                        // dd($diffInMonths);
                         // If dates are in different months, adjust the result to ensure any partial month counts as a full month
                         if ($productAddedYearMonth !== $productGatePassYearMonth) {
                             $diffInMonths = (int)$productAddedDateCarbon->startOfMonth()->diffInMonths($productGatePassDateCarbon->endOfMonth()) + 1;
+                            // dd($diffInMonths);
                         }else{
-
                             $diffInMonths =1;
 
                         }
@@ -109,7 +110,7 @@ class ProductRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                // Tables\Actions\CreateAction::make(),
                 Tables\Actions\AttachAction::make()
                     ->form(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
@@ -140,12 +141,13 @@ class ProductRelationManager extends RelationManager
 
                         TextInput::make('box')
                             ->required()
+                            
                             // ->afterStateUpdated(function (Set $set, ?Product $record, $state, Get $get) {
                             //     // Get the selected product
                             //     $selectedProduct = Product::find($get('product_id'));
 
                             //     // Perform any action you need with the selected product
-                            //     // dd($selectedProduct, "adasd");
+                            //     dd($state, "adasd");
                             // })
                             ->live(onBlur: true),
                         // TextInput::make('amount')
@@ -170,7 +172,7 @@ class ProductRelationManager extends RelationManager
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
                 Tables\Actions\DetachAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
