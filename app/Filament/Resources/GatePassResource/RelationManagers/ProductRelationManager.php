@@ -72,6 +72,15 @@ class ProductRelationManager extends RelationManager
 
                         return $record->rate * ($record->pivot->box);
                     }),
+                TextColumn::make('date')
+                    ->label('Date')
+                    ->getStateUsing(function ($record, ?Product $product) {
+
+                        // dd($record->product_price , $product->nug , $record->nug );
+
+
+                        return $record->date;
+                    }),
                 TextColumn::make('durations')
                     ->label('Total Durations')
                     ->getStateUsing(function ($record, ?Product $product) {
@@ -141,7 +150,7 @@ class ProductRelationManager extends RelationManager
 
                         TextInput::make('box')
                             ->required()
-                            
+
                             // ->afterStateUpdated(function (Set $set, ?Product $record, $state, Get $get) {
                             //     // Get the selected product
                             //     $selectedProduct = Product::find($get('product_id'));
