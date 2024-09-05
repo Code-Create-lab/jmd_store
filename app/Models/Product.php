@@ -18,5 +18,26 @@ class Product extends Model
 
     }
 
+    public function gatePass(){
+
+        return $this->belongsTo(GatePass::class,'gate_pass_id');
+
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Concatenate name and marka during creation
+        static::creating(function ($product) {
+            $product->name = "{$product->name} - ({$product->marka})";
+        });
+
+        // Concatenate name and marka during update
+        static::updating(function ($product) {
+            $product->name = "{$product->name} - ({$product->marka})";
+        });
+    }
+
 }
 

@@ -87,7 +87,8 @@ class ProductRelationManager extends RelationManager
 
                         // dd($product->gatePasses[0]->date,$product->date);
                         $productAddedDate =  $product->date;
-                        $productGatePassDate =  $product->gatePasses[0]->date;
+                        // dd($record->gatePass);
+                        $productGatePassDate =  $product->gatePass->date;
                         // Convert the string dates to Carbon instances
                         $productAddedDateCarbon = Carbon::parse($productAddedDate);
                         $productGatePassDateCarbon = Carbon::parse($productGatePassDate);
@@ -99,20 +100,19 @@ class ProductRelationManager extends RelationManager
                         // Calculate the difference in months between the two dates
                         $diffInMonths = $productAddedDateCarbon->diffInMonths($productGatePassDateCarbon);
 
-                        // dd($diffInMonths);
+
                         // If dates are in different months, adjust the result to ensure any partial month counts as a full month
                         if ($productAddedYearMonth !== $productGatePassYearMonth) {
                             $diffInMonths = (int)$productAddedDateCarbon->startOfMonth()->diffInMonths($productGatePassDateCarbon->endOfMonth()) + 1;
                             // dd($diffInMonths);
-                        }else{
-                            $diffInMonths =1;
-
+                        } else {
+                            $diffInMonths = 1;
                         }
 
 
 
 
-                        return $diffInMonths > 0 ? $diffInMonths. " Months" : $diffInMonths ." Month";
+                        return $diffInMonths > 0 ? $diffInMonths . " Months" : $diffInMonths . " Month";
                     }),
             ])
             ->filters([
@@ -121,8 +121,22 @@ class ProductRelationManager extends RelationManager
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),
                 Tables\Actions\AttachAction::make()
-                    ->form(fn (AttachAction $action): array => [
-                        $action->getRecordSelect(),
+                    ->preloadRecordSelect()
+                    ->form(fn(AttachAction $action): array => [
+                        $action->getRecordSelect()
+                        // ->getOptionLabelFromRecordUsing(fn (Product $record) => "{$record->name} {$record->marka}")
+                        // ->relationship('products', 'name_marka')  // Use the accessor here
+                        ->searchable(['name', 'marka'])
+                        ->searchingMessage('Searching Products...'),
+
+                        // Select::make('product_id')
+                        //     ->label('Select Product')
+                        //     ->options(Product::all()->pluck('name', 'id')->map(function ($name, $id) {
+                        //         $product = Product::find($id);
+                        //         return "{$product->name} ({$product->marka})";
+                        //     }))
+                        //     ->searchable(['name', 'marka'])
+                        //     ->searchingMessage('Searching Products...'),
 
                         // TextInput::make('box')->required()
                         //     ->afterStateUpdated(function (Set $set, ?Product $record, $state, Get $get) {
