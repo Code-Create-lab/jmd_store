@@ -35,7 +35,10 @@ class Product extends Model
 
         // Concatenate name and marka during update
         static::updating(function ($product) {
-            $product->name = "{$product->name} - ({$product->marka})";
+            // Check if the name already ends with the marka value
+            if (!str_ends_with($product->name, "({$product->marka})")) {
+                $product->name = "{$product->name} ({$product->marka})";
+            }
         });
     }
 
