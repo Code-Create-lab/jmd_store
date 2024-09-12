@@ -94,8 +94,8 @@ class ProductRelationManager extends RelationManager
                         $productGatePassDateCarbon = Carbon::parse($productGatePassDate);
 
                         // Get the year and month of both dates
-                        $productAddedYearMonth = $productAddedDateCarbon->format('Y-m');
-                        $productGatePassYearMonth = $productGatePassDateCarbon->format('Y-m');
+                        $productAddedYearMonth = $productAddedDateCarbon->format('Y-m-d');
+                        $productGatePassYearMonth = $productGatePassDateCarbon->format('Y-m-d');
 
                         // Calculate the difference in months between the two dates
                         $diffInMonths = $productAddedDateCarbon->diffInMonths($productGatePassDateCarbon);
@@ -103,7 +103,8 @@ class ProductRelationManager extends RelationManager
 
                         // If dates are in different months, adjust the result to ensure any partial month counts as a full month
                         if ($productAddedYearMonth !== $productGatePassYearMonth) {
-                            $diffInMonths = (int)$productAddedDateCarbon->startOfMonth()->diffInMonths($productGatePassDateCarbon->endOfMonth()) + 1;
+                            $diffInMonths = ceil($productAddedDateCarbon->diffInMonths($productGatePassDateCarbon)) ;
+                            // $diffInMonths = (int)$productAddedDateCarbon->startOfMonth()->diffInMonths($productGatePassDateCarbon->endOfMonth()) ;
                             // dd($diffInMonths);
                         } else {
                             $diffInMonths = 1;
