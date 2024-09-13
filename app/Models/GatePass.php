@@ -42,17 +42,18 @@ class GatePass extends Model
                 $productAddedDateCarbon = Carbon::parse($productAddedDate);
                 $productGatePassDateCarbon = Carbon::parse($productGatePassDate);
 
-                // Get the year and month of both dates
-                $productAddedYearMonth = $productAddedDateCarbon->format('Y-m');
-                $productGatePassYearMonth = $productGatePassDateCarbon->format('Y-m');
+                 // Get the year and month of both dates
+                 $productAddedYearMonth = $productAddedDateCarbon->format('Y-m-d');
+                 $productGatePassYearMonth = $productGatePassDateCarbon->format('Y-m-d');
+
 
                 // Calculate the difference in months between the two dates
                 $diffInMonths = $productAddedDateCarbon->diffInMonths($productGatePassDateCarbon);
 
                 // If dates are in different months, adjust the result to ensure any partial month counts as a full month
                 if ($productAddedYearMonth !== $productGatePassYearMonth) {
-                    $diffInMonths = (int)$productAddedDateCarbon->startOfMonth()->diffInMonths($productGatePassDateCarbon->endOfMonth()) + 1;
-                } else {
+                    $diffInMonths = ceil($productAddedDateCarbon->diffInMonths($productGatePassDateCarbon)) ;
+                 } else {
 
                     $diffInMonths = 1;
                 }
