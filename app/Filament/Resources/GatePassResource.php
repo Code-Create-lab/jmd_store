@@ -100,6 +100,7 @@ class GatePassResource extends Resource
             'index' => Pages\ListGatePasses::route('/'),
             'create' => Pages\CreateGatePass::route('/create'),
             'edit' => Pages\EditGatePass::route('/{record}/edit'),
+            'view' => Pages\ViewGatePass::route('/{record}/view'),
         ];
     }
 }

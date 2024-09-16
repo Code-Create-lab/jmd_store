@@ -14,7 +14,7 @@ class Product extends Model
 
     public function gatePasses(){
 
-        return $this->belongsToMany(GatePass::class,'gate_pass_products')->withTimestamps();
+        return $this->belongsToMany(GatePass::class,'gate_pass_products')->withPivot('box')->withTimestamps();
 
     }
 
