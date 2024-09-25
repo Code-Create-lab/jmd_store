@@ -13,6 +13,10 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Average;
+use Filament\Tables\Columns\Summarizers\Range;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,6 +52,10 @@ class GatePassResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        // ->heading('Clients')
+            ->poll('10s')
+            ->deferLoading()
+            ->striped()
             ->columns([
                 Tables\Columns\TextColumn::make('slip_no')
                     ->searchable(),
@@ -66,15 +74,23 @@ class GatePassResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('total_amount')
+                    ->summarize(Sum::make()->label('Total Amount')->money('INR', locale: 'nl')),
+                TextColumn::make('box')
+                    ->summarize(Sum::make()->label('Total Box')),
+
+                // ->using(fn (Builder $query): string => $query->min('last_name')))
+
             ])
+            ->paginated([10, 25, 50, 100])
             ->filters([
                 SelectFilter::make('product_id')
-                ->label('Product')
-                // ->options(Product::all()->pluck('name','id')),
-                ->relationship('product','name')
-                ->options(function(){
-                    return Product::all()->pluck('name','id');
-                }),
+                    ->label('Product')
+                    // ->options(Product::all()->pluck('name','id')),
+                    ->relationship('product', 'name')
+                    ->options(function () {
+                        return Product::all()->pluck('name', 'id');
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
