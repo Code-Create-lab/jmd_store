@@ -119,7 +119,9 @@ class GatePassList extends BaseWidget
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->url(fn(GatePass $requset): string => url('admin/gate-passes/' . $requset->id . "/edit"))
+                    ->openUrlInNewTab(),
             ]);
     }
 }
