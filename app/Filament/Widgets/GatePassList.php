@@ -4,12 +4,17 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Resources\GatePassResource;
 use App\Models\GatePass;
+use App\Models\Product;
+use Filament\Forms\Components\DatePicker;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class GatePassList extends BaseWidget
@@ -42,7 +47,7 @@ class GatePassList extends BaseWidget
                     ->bulleted()
                     ->wrap(),
 
-                TextColumn::make('product.box')
+                TextColumn::make('product.remaining_box')
                     ->label('Total Boxes')
                     // ->weight(FontWeight::Bold)
                     ->listWithLineBreaks()
@@ -74,6 +79,47 @@ class GatePassList extends BaseWidget
                 TextColumn::make('box')
 
                     ->summarize(Sum::make()->label('Total Box')),
+            ])
+            ->filters([
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make("created_at")
+                            ->label('Created From'),
+                        DatePicker::make("created_to")
+                            ->label('Created To')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['created_at'], fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
+                            ->when($data['created_to'], fn(Builder $query, $date) => $query->whereDate('created_at', '<=', $date));
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (!$data['created_at'] && !$data['created_to']) {
+                            return null;
+                        }
+                        $indicator = '';
+
+                        if ($data['created_at']) {
+                            $indicator .= 'Created From: ' . $data['created_at'];
+                        }
+                        if ($data['created_to'] && $data['created_at']) {
+                            $indicator .= ' To ' . $data['created_to'];
+                        }
+                        if ($data['created_to'] && !$data['created_at']) {
+                            $indicator .= 'Created To ' . $data['created_to'];
+                        }
+                        return $indicator;
+                    }),
+                SelectFilter::make('product_id')
+                    ->label('Product')
+                    // ->options(Product::all()->pluck('name','id')),
+                    ->relationship('product', 'name')
+                    ->options(function () {
+                        return Product::all()->pluck('name', 'id');
+                    }),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
             ]);
     }
 }

@@ -1,59 +1,27 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Widgets;
 
-use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
-use App\Models\GatePassHasProduct;
+use App\Filament\Resources\ProductResource;
 use App\Models\Product;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Widgets\TableWidget as BaseWidget;
 
-class ProductResource extends Resource
+class ProductList extends BaseWidget
 {
-    protected static ?string $model = Product::class;
+    protected int | string | array $columnSpan = 'full';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $sort = 3;
 
-    protected static ?string $navigationLabel = 'Purchased Slips';
-    protected static ?string $pluralModelLabel = 'Purchased Slips';
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('marka')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('box')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('rate')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('date')
-                    //     ->native(false)
-                    //  ->minDate(now())
-                    ->required(),
-                Forms\Components\Toggle::make('status')
-                    ->default(true)
-                    ->required(),
-            ]);
-    }
-
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->query(ProductResource::getEloquentQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Acount Head')
@@ -62,16 +30,7 @@ class ProductResource extends Resource
                     ->label('LOT NO')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('box')
-                    ->label('Balance(Boxes)')
-                    // ->getStateUsing(function($record){
-                    //     // dd($record);
-                    //     $gatepassProduct = GatePassHasProduct::where('product_id',$record->id)->sum('box');
-
-                    //     // dd($gatepassProduct);
-                    //     $box = $record->box - $gatepassProduct;
-                    //     return $box;
-                    // })
-                    ->searchable(),
+                    ->label('Balance(Boxes)'),
                 Tables\Columns\TextColumn::make('remaining_box')
                     ->label('Remaining Boxes')
                     // ->getStateUsing(function($record){
@@ -98,6 +57,33 @@ class ProductResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+            ])
+
+
+            // ->actions([
+            //     // Tables\Actions\EditAction::make()
+            //     //    ->url(fn (Product $request): string => url('admin/ledgers/' . $request->id . "/edit")),,
+            //     // Tables\Actions\ViewAction::make(),
+
+            //     Action::make('feature')
+            //         ->label('Print Invoice')
+            //         ->url(fn (Product $request): string => url('admin/product/' . $request->id . "/view"))
+            //         ->visible(fn (Product $request) => $request->total_amount !== null)
+            // ]);
+            ->actions([
+                Tables\Actions\EditAction::make()
+                    ->url(fn(Product $requset): string => url('admin/products/' . $requset->id . "/edit"))
+                    ->openUrlInNewTab(),
+
+                Tables\Actions\EditAction::make()
+                    ->label("View")
+                    ->color("danger")
+                    ->url(fn(Product $requset): string => url('admin/products/' . $requset->id . "/view"))
+                    ->openUrlInNewTab(),
+                Action::make('feature')
+                    ->label('Print Invoice')
+                    ->url(fn(Product $requset): string => route('pdf', ['id' => $requset->id]))
+                    ->visible(fn(Product $request) => $request->total_amount !== null)
             ])
             ->filters([
                 Filter::make('created_at')
@@ -129,32 +115,6 @@ class ProductResource extends Resource
                     }
                     return $indicator;
                 }),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListProducts::route('/'),
-            'create' => Pages\CreateProduct::route('/create'),
-            'edit' => Pages\EditProduct::route('/{record}/edit'),
-            'view' => Pages\ViewProduct::route('/{record}/view'),
-        ];
     }
 }
