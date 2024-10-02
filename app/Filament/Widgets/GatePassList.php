@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Resources\GatePassResource;
 use App\Models\GatePass;
-use App\Models\Product;
 use Filament\Forms\Components\DatePicker;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
@@ -16,6 +15,8 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\TableWidget as BaseWidget;
+use App\Filament\Tables\Actions\SummarizedAction;
+use App\Models\Product;
 
 class GatePassList extends BaseWidget
 {
@@ -77,7 +78,6 @@ class GatePassList extends BaseWidget
                 TextColumn::make('total_amount')
                     ->summarize(Sum::make()->label('Total Amount')->money('INR', locale: 'nl')),
                 TextColumn::make('box')
-
                     ->summarize(Sum::make()->label('Total Box')),
             ])
             ->filters([
@@ -123,5 +123,18 @@ class GatePassList extends BaseWidget
                 ->url(fn(GatePass $requset): string => url('admin/gate-passes/' . $requset->id . "/edit"))
                     ->openUrlInNewTab(),
             ]);
+            // ->headerActions([
+            //     Action::make('downloadSampleXSL')
+            //         ->label('Download Sample Excel')
+            //         ->url(route('download-sample-xsl', 'block'))
+            //     // ->icon('heroicon-o-download')
+            // ])
+            // ->headerActions([
+            //     Action::make('performSummaryAction')
+            //         ->label('Perform Summary Action') // Customize the button label
+            //         ->color('primary') // Customize the button color
+            //         ->action(fn() => $this->performSummaryAction()), // Define the action
+            // ]);
+            // ->view('gatepass'); // Use the custom Blade view
     }
 }
