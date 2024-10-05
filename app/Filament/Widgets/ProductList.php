@@ -11,6 +11,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\TableWidget as BaseWidget;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class ProductList extends BaseWidget
 {
@@ -115,6 +116,11 @@ class ProductList extends BaseWidget
                     }
                     return $indicator;
                 }),
+            ]) ->bulkActions([
+                ExportBulkAction::make(),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 }
