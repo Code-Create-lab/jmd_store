@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\GatePassResource\RelationManagers;
 
+use App\Filament\Resources\ProductResource;
 use App\Models\Product;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -10,9 +11,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Pages\Actions\ButtonAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\AttachAction;
+use Filament\Tables\Actions\ButtonAction as ActionsButtonAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -103,7 +106,7 @@ class ProductRelationManager extends RelationManager
 
                         // If dates are in different months, adjust the result to ensure any partial month counts as a full month
                         if ($productAddedYearMonth !== $productGatePassYearMonth) {
-                            $diffInMonths = ceil($productAddedDateCarbon->diffInMonths($productGatePassDateCarbon)) ;
+                            $diffInMonths = ceil($productAddedDateCarbon->diffInMonths($productGatePassDateCarbon));
                             // $diffInMonths = (int)$productAddedDateCarbon->startOfMonth()->diffInMonths($productGatePassDateCarbon->endOfMonth()) ;
                             // dd($diffInMonths);
                         } else {
@@ -125,10 +128,10 @@ class ProductRelationManager extends RelationManager
                     ->preloadRecordSelect()
                     ->form(fn(AttachAction $action): array => [
                         $action->getRecordSelect()
-                        // ->getOptionLabelFromRecordUsing(fn (Product $record) => "{$record->name} {$record->marka}")
-                        // ->relationship('products', 'name_marka')  // Use the accessor here
-                        ->searchable(['name', 'marka'])
-                        ->searchingMessage('Searching Products...'),
+                            // ->getOptionLabelFromRecordUsing(fn (Product $record) => "{$record->name} {$record->marka}")
+                            // ->relationship('products', 'name_marka')  // Use the accessor here
+                            ->searchable(['name', 'marka'])
+                            ->searchingMessage('Searching Products...'),
 
                         // Select::make('product_id')
                         //     ->label('Select Product')
@@ -194,6 +197,10 @@ class ProductRelationManager extends RelationManager
                         //     // }),
                         //     ,
                     ]),
+                ActionsButtonAction::make('createProduct')
+                    ->label('Create Product')
+                    ->url(fn() => ProductResource::getUrl('create')), // Redirect to the Category resource's create page
+                    // ->icon('heroicon-o-plus'),
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
