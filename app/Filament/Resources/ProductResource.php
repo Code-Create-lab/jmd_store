@@ -8,10 +8,12 @@ use App\Models\GatePassHasProduct;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -101,35 +103,68 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Filter::make('created_at')
-                ->form([
-                    DatePicker::make("created_at")
-                        ->label('Created From'),
-                    DatePicker::make("created_to")
-                        ->label('Created To')
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when($data['created_at'], fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
-                        ->when($data['created_to'], fn(Builder $query, $date) => $query->whereDate('created_at', '<=', $date));
-                })
-                ->indicateUsing(function (array $data): ?string {
-                    if (!$data['created_at'] && !$data['created_to']) {
-                        return null;
-                    }
-                    $indicator = '';
+                Filter::make('name')
 
-                    if ($data['created_at']) {
-                        $indicator .= 'Created From: ' . $data['created_at'];
-                    }
-                    if ($data['created_to'] && $data['created_at']) {
-                        $indicator .= ' To ' . $data['created_to'];
-                    }
-                    if ($data['created_to'] && !$data['created_at']) {
-                        $indicator .= 'Created To ' . $data['created_to'];
-                    }
-                    return $indicator;
-                }),
+                    // ->options(Location::all()->pluck('name', 'id'))
+                    ->form([
+                        Select::make("name")
+                            ->label('Name')
+                            ->options(function () {
+                                $alphabet = range('A', 'Z');
+                                $options = [];
+
+                                // Create A-Z options for the filter
+                                foreach ($alphabet as $letter) {
+                                    $options[$letter] = $letter;
+                                }
+
+                                return $options;
+                            })
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['name'],
+                            function (Builder $query, $name) {
+                                return $query->where('name', 'like', "$name%");
+                            }
+                        );
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (!$data['name']) {
+                            return null;
+                        }
+                        $indicator = 'Name: ' . $data['name'];
+                        return $indicator;
+                    }),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make("created_at")
+                            ->label('Created From'),
+                        DatePicker::make("created_to")
+                            ->label('Created To')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['created_at'], fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
+                            ->when($data['created_to'], fn(Builder $query, $date) => $query->whereDate('created_at', '<=', $date));
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (!$data['created_at'] && !$data['created_to']) {
+                            return null;
+                        }
+                        $indicator = '';
+
+                        if ($data['created_at']) {
+                            $indicator .= 'Created From: ' . $data['created_at'];
+                        }
+                        if ($data['created_to'] && $data['created_at']) {
+                            $indicator .= ' To ' . $data['created_to'];
+                        }
+                        if ($data['created_to'] && !$data['created_at']) {
+                            $indicator .= 'Created To ' . $data['created_to'];
+                        }
+                        return $indicator;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -158,5 +193,18 @@ class ProductResource extends Resource
             'edit' => Pages\EditProduct::route('/{record}/edit'),
             'view' => Pages\ViewProduct::route('/{record}/view'),
         ];
+    }
+
+    public static function getAlphabetOptions(): array
+    {
+        $alphabet = range('A', 'Z');
+        $options = [];
+
+        // Create A-Z options for the filter
+        foreach ($alphabet as $letter) {
+            $options[$letter] = $letter;
+        }
+
+        return $options;
     }
 }
