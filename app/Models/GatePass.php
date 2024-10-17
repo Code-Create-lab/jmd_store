@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class GatePass extends Model
 {
@@ -61,9 +62,18 @@ class GatePass extends Model
                 $totalBox += $product->pivot->box;
 
                 $productData = Product::find($product->id);
-                $productData->remaining_box = $productData->box - $product->pivot->box;
+
+                // Sum the box values for the given product ID from the pivot table
+                $boxSum = DB::table('gate_pass_products')
+                ->where('product_id', $product->id)
+                ->sum('box');
+                // ->get();
+
+                // Update the remaining_box value
+                $productData->remaining_box = $productData->box - $boxSum;
+                // $productData->remaining_box = $productData->box - $product->pivot->sum('box');
                 $productData->save();
-                // dd($diffInMonths,$product, $model);
+                // dd($productData,$product, $boxSum);
             }
 
             // $otalRrate = $model->product->sum('rate') * $model->product->sum('rate' pivot_box;
