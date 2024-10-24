@@ -20,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\DB;
 
 class ProductRelationManager extends RelationManager
 {
@@ -63,9 +64,15 @@ class ProductRelationManager extends RelationManager
                     ->getStateUsing(function ($record, ?Product $product) {
 
                         // dd($record->product_price , $product->nug , $record->nug );
+                        // dd($record->pivot);
 
+                        // dd ($record);
+                        $boxValue = DB::table('gate_pass_products')
+                            ->where('product_id', $record->product_id)
+                            ->where('gate_pass_id', $record->gate_pass_id)  // Adjust this to your relationship
+                            ->value('box');  // Fetch the 'box' column from the pivot table
 
-                        return ($record->pivot->box);
+                        return $boxValue ?? 'No box info';
                     }),
                 TextColumn::make('price')
                     ->label('Total Price')
@@ -73,8 +80,11 @@ class ProductRelationManager extends RelationManager
 
                         // dd($record->product_price , $product->nug , $record->nug );
 
-
-                        return $record->rate * ($record->pivot->box);
+                        $boxValue = DB::table('gate_pass_products')
+                            ->where('product_id', $record->product_id)
+                            ->where('gate_pass_id', $record->gate_pass_id)  // Adjust this to your relationship
+                            ->value('box'); 
+                        return $record->rate * ($boxValue);
                     }),
                 TextColumn::make('date')
                     ->label('Date')
@@ -201,7 +211,7 @@ class ProductRelationManager extends RelationManager
                 ActionsButtonAction::make('createProduct')
                     ->label('Create Product')
                     ->url(fn() => ProductResource::getUrl('create')), // Redirect to the Category resource's create page
-                    // ->icon('heroicon-o-plus'),
+                // ->icon('heroicon-o-plus'),
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
