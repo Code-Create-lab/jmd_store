@@ -55,6 +55,7 @@ class ProductRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->allowDuplicates()
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
