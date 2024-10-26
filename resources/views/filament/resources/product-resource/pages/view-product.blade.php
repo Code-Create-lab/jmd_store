@@ -49,7 +49,7 @@
                         {{-- @dd($data, $key) --}}
                         @foreach ($data as $key => $gatepassProduct)
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($gatepassProduct['created_at'])->format('d/m/Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($gatepassProduct->pivot->created_at)->format('d/m/Y') }}</td>
                     <td></td>
                     <td>{{ $gatepassProduct->pivot->box }}</td>
                     @php
