@@ -77,13 +77,23 @@ class ProductRelationManager extends RelationManager
                         return $record->rate * ($record->pivot->box);
                     }),
                 TextColumn::make('date')
-                    ->label('Date')
+                    ->label('In Warehouse Date')
                     ->getStateUsing(function ($record, ?Product $product) {
 
                         // dd($record->product_price , $product->nug , $record->nug );
 
 
-                        return $record->date;
+                        return \Carbon\Carbon::parse($record->date)->format('d/m/Y');
+                    }),
+
+                TextColumn::make('added_date')
+                    ->label('In Slip Date')
+                    ->getStateUsing(function ($record, ?Product $product) {
+
+                        // dd($record->product_price , $product->nug , $record->nug );
+
+                        // dd($record->gatePasses->where('id', $record->gate_pass_id)->first()->pivot->created_at,$record->gate_pass_id);
+                        return  \Carbon\Carbon::parse($record->gatePasses->where('id', $record->gate_pass_id)->first()->pivot->created_at)->format('d/m/Y');
                     }),
                 TextColumn::make('durations')
                     ->label('Total Durations')
@@ -201,7 +211,7 @@ class ProductRelationManager extends RelationManager
                 ActionsButtonAction::make('createProduct')
                     ->label('Create Product')
                     ->url(fn() => ProductResource::getUrl('create')), // Redirect to the Category resource's create page
-                    // ->icon('heroicon-o-plus'),
+                // ->icon('heroicon-o-plus'),
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
