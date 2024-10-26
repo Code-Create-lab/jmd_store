@@ -29,6 +29,7 @@
         <thead>
             <tr>
                 <th>DATE</th>
+                <th>SLIP NO</th>
                 <th>RECEIVED</th>
                 <th>ISSUE</th>
                 <th>BALANCED</th>
@@ -38,10 +39,13 @@
             @foreach ($productData as $key => $data)
                 <tr>
 
+                    {{-- @dd($data->get_single_gatePass) --}}
                     @if ($key == 'product')
                         <td>{{ \Carbon\Carbon::parse($data['created_at'])->format('d/m/Y') ?? '' }}</td>
-                        <td>{{ $record['box'] }}</td>
                         <td></td>
+                        <td>{{ $record['box'] }}</td>
+                        <td>0</td>
+                        <td>{{ $record['box'] }}</td>
                         @php
                             $balance = $record['box'];
                         @endphp
@@ -50,6 +54,7 @@
                         @foreach ($data as $key => $gatepassProduct)
                 <tr>
                     <td>{{ \Carbon\Carbon::parse($gatepassProduct->pivot->created_at)->format('d/m/Y') }}</td>
+                    <td>{{$gatepassProduct->slip_no}}</td>
                     <td></td>
                     <td>{{ $gatepassProduct->pivot->box }}</td>
                     @php
