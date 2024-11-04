@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\GatePassResource\RelationManagers;
 
 use App\Filament\Resources\ProductResource;
+use App\Models\GatePassHasProduct;
 use App\Models\Product;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -100,10 +101,12 @@ class ProductRelationManager extends RelationManager
                     ->label('In Slip Date')
                     ->getStateUsing(function ($record, ?Product $product) {
 
-                        // dd($record->product_price , $product->nug , $record->nug );
-
+                        $getPivot = GatePassHasProduct::where('gate_pass_id', $record->gate_pass_id)->where('box', $record->box)->first();
+                        // dd($getPivot,$record->box,$record->gate_pass_id);
+                            // dd($record->product_price , $product->nug , $record->nug );
+                        return \Carbon\Carbon::parse( $getPivot?->created_at)->format('d/m/Y');
                         // dd($record->gatePasses->where('id', $record->gate_pass_id)->first()->pivot->created_at,$record->gate_pass_id);
-                        return  \Carbon\Carbon::parse($record->gatePasses->where('id', $record->gate_pass_id)->first()->pivot->created_at)->format('d/m/Y');
+                        // return  \Carbon\Carbon::parse($record->gatePasses->where('id', $record->gate_pass_id)->first()->pivot->created_at)->format('d/m/Y');
                     }),
                 TextColumn::make('durations')
                     ->label('Total Durations')
