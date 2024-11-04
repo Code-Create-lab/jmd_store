@@ -56,7 +56,7 @@ class ProductRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            // ->allowDuplicates()
+            ->allowDuplicates()
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
@@ -83,7 +83,7 @@ class ProductRelationManager extends RelationManager
                         $boxValue = DB::table('gate_pass_products')
                             ->where('product_id', $record->product_id)
                             ->where('gate_pass_id', $record->gate_pass_id)  // Adjust this to your relationship
-                            ->value('box'); 
+                            ->value('box');
                         return $record->rate * ($boxValue);
                     }),
                 TextColumn::make('date')
