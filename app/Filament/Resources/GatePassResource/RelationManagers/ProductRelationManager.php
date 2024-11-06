@@ -233,7 +233,7 @@ class ProductRelationManager extends RelationManager
                 // ->icon('heroicon-o-plus'),
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DetachAction::make(),
                 // Tables\Actions\DeleteAction::make(),
             ])
