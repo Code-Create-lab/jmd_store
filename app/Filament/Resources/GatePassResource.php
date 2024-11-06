@@ -82,15 +82,16 @@ class GatePassResource extends Resource
                     ->wrap(),
 
                 TextColumn::make('product.box')
-                    ->label('Total Boxes')
+                    ->label('Remaining Boxes')
                     // ->weight(FontWeight::Bold)
                     ->listWithLineBreaks()
                     ->badge()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('box')
-                    ->label('Boxes'),
+                    ->label('Total Boxes'),
                 Tables\Columns\TextColumn::make('slip_no')
-                    ->searchable(),
+                    ->searchable()
+                    ->weight(FontWeight::Bold),
 
 
                 Tables\Columns\TextColumn::make('total_amount'),
