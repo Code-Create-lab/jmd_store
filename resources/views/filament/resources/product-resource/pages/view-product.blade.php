@@ -20,6 +20,8 @@
     </style>
     <h1>{{ $record->name }}</h1>
 
+    <h2> <b> Product Added Date : </b> {{ \Carbon\Carbon::parse($productData['product']['date'])->format('M d, Y') ?? '' }}</h2>
+
     <a href="{{ route('download_pdf', $record->id) }}">
         <button class="btn button print_now">Print Now</button>
 
@@ -28,7 +30,8 @@
     <table>
         <thead>
             <tr>
-                <th>DATE</th>
+                <th>In Warehouse</th>
+                <th>In Slip</th>
                 <th>SLIP NO</th>
                 <th>RECEIVED</th>
                 <th>ISSUE</th>
@@ -41,7 +44,8 @@
 
                     {{-- @dd($data->get_single_gatePass) --}}
                     @if ($key == 'product')
-                        <td>{{ \Carbon\Carbon::parse($data['created_at'])->format('d/m/Y') ?? '' }}</td>
+                        <td>{{ \Carbon\Carbon::parse($data['date'])->format('M d, Y') ?? '' }}</td>
+                        <td></td>
                         <td></td>
                         <td>{{ $record['box'] }}</td>
                         <td>0</td>
@@ -53,8 +57,10 @@
                         {{-- @dd($data, $key) --}}
                         @foreach ($data as $key => $gatepassProduct)
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($gatepassProduct->pivot->created_at)->format('d/m/Y') }}</td>
-                    <td>{{$gatepassProduct->slip_no}}</td>
+                    {{-- @dd() --}}
+                    <td></td>
+                    <td>{{ \Carbon\Carbon::parse($gatepassProduct->pivot->in_slip_date)->format('M d, Y') }}</td>
+                    <td>{{ $gatepassProduct->slip_no }}</td>
                     <td></td>
                     <td>{{ $gatepassProduct->pivot->box }}</td>
                     @php

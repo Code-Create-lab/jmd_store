@@ -10,11 +10,15 @@
 </style>
 <h1>{{ $productData['product']->name }}</h1>
 
+<h2> <b> Product Added Date : </b> {{ \Carbon\Carbon::parse($productData['product']['date'])->format('M d, Y') ?? '' }}
+</h2>
 
 <table>
     <thead>
         <tr>
-            <th>DATE</th>
+            <th>In Warehouse</th>
+            <th>In Slip</th>
+            <th>SLIP NO</th>
             <th>RECEIVED</th>
             <th>ISSUE</th>
             <th>BALANCED</th>
@@ -26,10 +30,12 @@
                 {{-- @dd($productData) --}}
 
                 @if ($key == 'product')
-                    <td>{{ \Carbon\Carbon::parse($data['created_at'])->format('d/m/Y') ?? '' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($data['date'])->format('M d, Y') ?? '' }}</td>
+                    <td></td>
+                    <td></td>
                     <td>{{ $data['box'] }}</td>
-                    <td></td>
-                    <td></td>
+                    <td>0</td>
+                    <td>{{ $data['box'] }}</td>
                     @php
                         $balance = $data['box'];
                     @endphp
@@ -37,7 +43,9 @@
                     @foreach ($data as $key => $gatepassProduct)
             <tr>
                 {{-- @dd($data) --}}
-                <td>{{ \Carbon\Carbon::parse($gatepassProduct['created_at'])->format('d/m/Y') }}</td>
+                <td></td>
+                <td>{{ \Carbon\Carbon::parse($gatepassProduct->pivot->in_slip_date)->format('M d, Y') }}</td>
+                <td>{{ $gatepassProduct->slip_no }}</td>
                 <td></td>
                 <td>{{ $gatepassProduct->pivot->box }}</td>
                 @php
