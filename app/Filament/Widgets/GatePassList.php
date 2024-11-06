@@ -86,7 +86,11 @@ class GatePassList extends BaseWidget
                 TextColumn::make('slip_no')
                     ->weight(FontWeight::Bold)
                     ->searchable(),
-                TextColumn::make('total_amount'),
+                // TextColumn::make('total_amount'),
+                TextColumn::make('total_amount')
+                    // ->prefix('₹')
+                    ->summarize(Sum::make()->label('Total Amount')->money('INR'))
+                    ->money('INR'),
                 TextColumn::make('date')
                     ->label('Pass Date')
                     ->date()
@@ -102,8 +106,7 @@ class GatePassList extends BaseWidget
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('total_amount')
-                    ->summarize(Sum::make()->label('Total Amount')->money('INR', locale: 'nl')),
+
                 // TextColumn::make('box')
                 //     ->summarize(Sum::make()->label('Total Box')),
 

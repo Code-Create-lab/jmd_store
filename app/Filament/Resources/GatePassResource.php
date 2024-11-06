@@ -98,7 +98,7 @@ class GatePassResource extends Resource
                     })
                     ->html() // Enable HTML rendering for the column
                     ->wrap(), // Wraps the text if it's too long
-                TextColumn::make('product.remaining_box')
+               TextColumn::make('product.remaining_box')
                     ->label('Remaining Boxes')
                     // ->weight(FontWeight::Bold)
                     ->listWithLineBreaks()
@@ -120,7 +120,11 @@ class GatePassResource extends Resource
                     ->weight(FontWeight::Bold),
 
 
-                Tables\Columns\TextColumn::make('total_amount'),
+                // Tables\Columns\TextColumn::make('total_amount'),
+                TextColumn::make('total_amount')
+                // ->prefix('₹')
+                    ->summarize(Sum::make()->label('Total Amount')->money('INR', locale: 'nl'))
+                    ->money('INR', locale: 'nl'),
                 Tables\Columns\TextColumn::make('date')
                     ->label('Pass Date')
                     ->date()
@@ -135,8 +139,8 @@ class GatePassResource extends Resource
                 //     ->dateTime()
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('total_amount')
-                    ->summarize(Sum::make()->label('Total Amount')->money('INR', locale: 'nl')),
+                // TextColumn::make('total_amount')
+                //     ->summarize(Sum::make()->label('Total Amount')->money('INR', locale: 'nl')),
                 // TextColumn::make('box')
 
                 //     ->summarize(Sum::make()->label('Total Box')),
