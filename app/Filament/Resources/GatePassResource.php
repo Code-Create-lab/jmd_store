@@ -72,7 +72,8 @@ class GatePassResource extends Resource
                     ->wrap()
                     ->placeholder('No Attached Product.'),
                 TextColumn::make('product.date')
-                    ->since()
+                    // ->since()
+                    ->date()
                     // ->description(fn (GatePass $record): string => $record->date)
                     // ->dateTimeTooltip()
                     ->label('Added Date')
@@ -80,15 +81,40 @@ class GatePassResource extends Resource
                     ->listWithLineBreaks()
                     ->bulleted()
                     ->wrap(),
+                TextColumn::make('created_at')
+                    ->label('In Slip Date')
+                    ->formatStateUsing(function ($record) {
+                        // Format each box count as a bullet point
+                        return $record->product->map(function ($product) {
+                            // dd($product->pivot);
+                            if ($product->pivot->in_slip_date) {
+                                $in_slip_date = \Carbon\Carbon::parse($product->pivot->in_slip_date)->format('M d, Y');
+                            } else {
 
-                TextColumn::make('product.box')
+                                $in_slip_date = "Not Available";
+                            }
+                            return "<li>{$in_slip_date}</li>"; // Wrap each box in a list item
+                        })->join(""); // Join list items without extra separators
+                    })
+                    ->html() // Enable HTML rendering for the column
+                    ->wrap(), // Wraps the text if it's too long
+                TextColumn::make('product.remaining_box')
                     ->label('Remaining Boxes')
                     // ->weight(FontWeight::Bold)
                     ->listWithLineBreaks()
                     ->badge()
                     ->wrap(),
-                Tables\Columns\TextColumn::make('box')
-                    ->label('Total Boxes'),
+
+                TextColumn::make('box')
+                    ->label('Boxes')
+                    ->formatStateUsing(function ($record) {
+                        // Format each box count as a bullet point
+                        return $record->product->map(function ($product) {
+                            return "<li>{$product->pivot->box}</li>"; // Wrap each box in a list item
+                        })->join(""); // Join list items without extra separators
+                    })
+                    ->html() // Enable HTML rendering for the column
+                    ->wrap(), // Wraps the text if it's too long
                 Tables\Columns\TextColumn::make('slip_no')
                     ->searchable()
                     ->weight(FontWeight::Bold),
@@ -111,9 +137,9 @@ class GatePassResource extends Resource
                 //     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('total_amount')
                     ->summarize(Sum::make()->label('Total Amount')->money('INR', locale: 'nl')),
-                TextColumn::make('box')
+                // TextColumn::make('box')
 
-                    ->summarize(Sum::make()->label('Total Box')),
+                //     ->summarize(Sum::make()->label('Total Box')),
 
             ])
             ->paginated([10, 25, 50, 100])
