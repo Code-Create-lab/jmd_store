@@ -44,7 +44,7 @@
             <tr>
                 {{-- @dd($data) --}}
                 <td></td>
-                <td>{{ \Carbon\Carbon::parse($gatepassProduct->pivot->in_slip_date)->format('M d, Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($gatepassProduct->date)->format('M d, Y') }}</td>
                 <td>{{ $gatepassProduct->slip_no }}</td>
                 <td></td>
                 <td>{{ $gatepassProduct->pivot->box }}</td>
