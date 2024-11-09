@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -58,6 +59,20 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('serial_no')
+                    ->label('S.No.')
+                    ->getStateUsing(static function (object $record, Table $table): int {
+                        $livewire = $table->getLivewire();
+                        
+                        $perPage = $livewire->getTableRecordsPerPage(); // Get records per page
+                        $currentPage = $livewire->page ?? 1; // Current page number
+                        
+                        // Determine index in the paginated collection
+                        $recordIndex = $livewire->getTableRecords()->search(fn ($r) => $r->id === $record->id);
+                        
+                        return ($currentPage - 1) * $perPage + $recordIndex + 1;
+                    })
+                    ->sortable(false), // Optional, prevent sorting as it’s not a real column
                 Tables\Columns\TextColumn::make('name')
                     ->label('Acount Head')
                     ->searchable(),
