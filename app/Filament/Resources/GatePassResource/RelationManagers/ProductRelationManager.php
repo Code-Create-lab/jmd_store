@@ -105,11 +105,11 @@ class ProductRelationManager extends RelationManager
                     ->label('In Slip Date')
                     ->getStateUsing(function ($record, ?Product $product) {
 
-                        $getPivot = GatePassHasProduct::where('gate_pass_id', $record->gate_pass_id)->where('box', $record->box)->first();
-                        // dd($getPivot,$record->box,$record->gate_pass_id);
+                        // $getPivot = GatePassHasProduct::where('gate_pass_id', $record->gate_pass_id)->where('box', $record->box)->first();
+                        // dd($record->gatePass->date);
                         // dd(\Carbon\Carbon::parse( $getPivot?->in_slip_date)->format('M d, Y'));
                         // dd($record->product_price , $product->nug , $record->nug );
-                        return \Carbon\Carbon::parse($getPivot->in_slip_date ?? $getPivot->created_at)->format('M d, Y');
+                        return \Carbon\Carbon::parse($record->gatePass->date)->format('M d, Y');
                         // dd($record->gatePasses->where('id', $record->gate_pass_id)->first()->pivot->created_at,$record->gate_pass_id);
                         // return  \Carbon\Carbon::parse($record->gatePasses->where('id', $record->gate_pass_id)->first()->pivot->created_at)->format('M d, Y');
                     }),
@@ -202,11 +202,11 @@ class ProductRelationManager extends RelationManager
                         TextInput::make('box')
                             ->required()
                             ->live(onBlur: true),
-                        DatePicker::make('in_slip_date')
-                            ->required()
-                            ->label('In Slip Date')
-                            ->maxDate(now()) // Disables future dates
-                            ->live(onBlur: true),
+                        // DatePicker::make('in_slip_date')
+                        //     ->required()
+                        //     ->label('In Slip Date')
+                        //     ->maxDate(now()) // Disables future dates
+                        //     ->live(onBlur: true),
                         // TextInput::make('amount')
                         //     // ->afterStateUpdated(function (Set $set, Get $get) {
                         //     //     $box = $get('box');
