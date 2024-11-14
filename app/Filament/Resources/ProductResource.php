@@ -63,13 +63,13 @@ class ProductResource extends Resource
                     ->label('S.No.')
                     ->getStateUsing(static function (object $record, Table $table): int {
                         $livewire = $table->getLivewire();
-                        
+
                         $perPage = $livewire->getTableRecordsPerPage(); // Get records per page
                         $currentPage = $livewire->page ?? 1; // Current page number
-                        
+
                         // Determine index in the paginated collection
                         $recordIndex = $livewire->getTableRecords()->search(fn ($r) => $r->id === $record->id);
-                        
+
                         return ($currentPage - 1) * $perPage + $recordIndex + 1;
                     })
                     ->sortable(false), // Optional, prevent sorting as it’s not a real column
@@ -78,7 +78,8 @@ class ProductResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('marka')
                     ->label('LOT NO')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(true),
                 Tables\Columns\TextColumn::make('box')
                     ->label('Balance(Boxes)')
                     // ->getStateUsing(function($record){
