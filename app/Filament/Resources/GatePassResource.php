@@ -171,8 +171,8 @@ class GatePassResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['created_at'], fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
-                            ->when($data['created_to'], fn(Builder $query, $date) => $query->whereDate('created_at', '<=', $date));
+                            ->when($data['created_at'], fn(Builder $query, $date) => $query->whereDate('date', '>=', $date))
+                            ->when($data['created_to'], fn(Builder $query, $date) => $query->whereDate('date', '<=', $date));
                     })
                     ->indicateUsing(function (array $data): ?string {
                         if (!$data['created_at'] && !$data['created_to']) {
