@@ -65,17 +65,18 @@ class GatePassResource extends Resource
             ->columns([
                 TextColumn::make('serial_no')
                     ->label('S.No.')
-                    ->getStateUsing(static function (object $record, Table $table): int {
-                        $livewire = $table->getLivewire();
+                    ->rowIndex()
+                    // ->getStateUsing(static function (object $record, Table $table): int {
+                    //     $livewire = $table->getLivewire();
 
-                        $perPage = $livewire->getTableRecordsPerPage(); // Get records per page
-                        $currentPage = $livewire->page ?? 1; // Current page number
+                    //     $perPage = $livewire->getTableRecordsPerPage(); // Get records per page
+                    //     $currentPage = $livewire->page ?? 1; // Current page number
 
-                        // Determine index in the paginated collection
-                        $recordIndex = $livewire->getTableRecords()->search(fn($r) => $r->id === $record->id);
+                    //     // Determine index in the paginated collection
+                    //     $recordIndex = $livewire->getTableRecords()->search(fn($r) => $r->id === $record->id);
 
-                        return ($currentPage - 1) * $perPage + $recordIndex + 1;
-                    })
+                    //     return ($currentPage - 1) * $perPage + $recordIndex + 1;
+                    // })
                     ->sortable(false), // Optional, prevent sorting as it’s not a real column
                 TextColumn::make('product.name')
                     ->searchable(isIndividual: true)
