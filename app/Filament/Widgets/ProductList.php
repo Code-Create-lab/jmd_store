@@ -22,16 +22,36 @@ class ProductList extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(ProductResource::getEloquentQuery())
+            ->query(function (Builder $query) {
+                $query = ProductResource::getEloquentQuery();
+                // Apply integer sorting to the `marka` column
+                $query->orderByRaw('CAST(marka AS SIGNED) ASC');
+                return $query;
+            })
+
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Acount Head')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('marka')
                     ->label('LOT NO')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('box')
-                    ->label('Balance(Boxes)'),
+                    ->getStateUsing(static function (object $record, Table $table): int {
+
+                        $getLot =   preg_split('/\D+/', $record->marka);
+                        return (int)$getLot[0];
+                    })
+                    ->searchable()
+                    ->sortable(true),
+                Tables\Columns\TextColumn::make('marka_lot')
+                    ->label('Lot:Marka')
+                    ->getStateUsing(static function (object $record, Table $table): string { // Change 'int' to 'string'
+                        $getLot = preg_split('/\D+/', $record->marka);
+
+                        // Make sure $getLot[0] exists and is a valid part of the array to avoid errors
+                        $lotPart = $getLot[0] ?? '';
+
+                        return $lotPart . "-" . $record->box; // Return as a string
+                    }),
                 Tables\Columns\TextColumn::make('remaining_box')
                     ->label('Remaining Boxes')
                     // ->getStateUsing(function($record){
@@ -88,35 +108,35 @@ class ProductList extends BaseWidget
             ])
             ->filters([
                 Filter::make('created_at')
-                ->form([
-                    DatePicker::make("created_at")
-                        ->label('Created From'),
-                    DatePicker::make("created_to")
-                        ->label('Created To')
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when($data['created_at'], fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
-                        ->when($data['created_to'], fn(Builder $query, $date) => $query->whereDate('created_at', '<=', $date));
-                })
-                ->indicateUsing(function (array $data): ?string {
-                    if (!$data['created_at'] && !$data['created_to']) {
-                        return null;
-                    }
-                    $indicator = '';
+                    ->form([
+                        DatePicker::make("created_at")
+                            ->label('Created From'),
+                        DatePicker::make("created_to")
+                            ->label('Created To')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['created_at'], fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date))
+                            ->when($data['created_to'], fn(Builder $query, $date) => $query->whereDate('created_at', '<=', $date));
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (!$data['created_at'] && !$data['created_to']) {
+                            return null;
+                        }
+                        $indicator = '';
 
-                    if ($data['created_at']) {
-                        $indicator .= 'Created From: ' . $data['created_at'];
-                    }
-                    if ($data['created_to'] && $data['created_at']) {
-                        $indicator .= ' To ' . $data['created_to'];
-                    }
-                    if ($data['created_to'] && !$data['created_at']) {
-                        $indicator .= 'Created To ' . $data['created_to'];
-                    }
-                    return $indicator;
-                }),
-            ]) ->bulkActions([
+                        if ($data['created_at']) {
+                            $indicator .= 'Created From: ' . $data['created_at'];
+                        }
+                        if ($data['created_to'] && $data['created_at']) {
+                            $indicator .= ' To ' . $data['created_to'];
+                        }
+                        if ($data['created_to'] && !$data['created_at']) {
+                            $indicator .= 'Created To ' . $data['created_to'];
+                        }
+                        return $indicator;
+                    }),
+            ])->bulkActions([
                 ExportBulkAction::make(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

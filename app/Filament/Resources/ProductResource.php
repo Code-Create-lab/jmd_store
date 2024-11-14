@@ -38,9 +38,11 @@ class ProductResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('marka')
                     ->required()
+                    ->integer()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('box')
                     ->required()
+                    ->integer()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('rate')
                     ->required()
@@ -58,30 +60,53 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function (Builder $query) {
+                $query = ProductResource::getEloquentQuery();
+                // Apply integer sorting to the `marka` column
+                $query->orderByRaw('CAST(marka AS SIGNED) ASC');
+                return $query;
+            })
             ->columns([
                 TextColumn::make('serial_no')
                     ->label('S.No.')
-                    ->getStateUsing(static function (object $record, Table $table): int {
-                        $livewire = $table->getLivewire();
+                    ->rowIndex()
+                    // ->getStateUsing(static function (object $record, Table $table): int {
+                    //     $livewire = $table->getLivewire();
 
-                        $perPage = $livewire->getTableRecordsPerPage(); // Get records per page
-                        $currentPage = $livewire->page ?? 1; // Current page number
+                    //     $perPage = $livewire->getTableRecordsPerPage(); // Get records per page
+                    //     $currentPage = $livewire->page ?? 1; // Current page number
 
-                        // Determine index in the paginated collection
-                        $recordIndex = $livewire->getTableRecords()->search(fn ($r) => $r->id === $record->id);
+                    //     // Determine index in the paginated collection
+                    //     $recordIndex = $livewire->getTableRecords()->search(fn ($r) => $r->id === $record->id);
 
-                        return ($currentPage - 1) * $perPage + $recordIndex + 1;
-                    })
+                    //     return ($currentPage - 1) * $perPage + $recordIndex + 1;
+                    // })
                     ->sortable(false), // Optional, prevent sorting as it’s not a real column
                 Tables\Columns\TextColumn::make('name')
                     ->label('Acount Head')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('marka')
                     ->label('LOT NO')
+                    ->getStateUsing(static function (object $record, Table $table): int {
+
+                        $getLot =   preg_split('/\D+/', $record->marka);
+                        return $getLot[0];
+                    })
                     ->searchable()
                     ->sortable(true),
+                Tables\Columns\TextColumn::make('marka_lot')
+                    ->label('Lot:Marka')
+                    ->getStateUsing(static function (object $record, Table $table): string { // Change 'int' to 'string'
+                        $getLot = preg_split('/\D+/', $record->marka);
+
+                        // Make sure $getLot[0] exists and is a valid part of the array to avoid errors
+                        $lotPart = $getLot[0] ?? '';
+
+                        return $lotPart . "-" . $record->box; // Return as a string
+                    }),
+                // ->sortable(true),
                 Tables\Columns\TextColumn::make('box')
-                    ->label('Balance(Boxes)')
+                    ->label('Boxes')
                     // ->getStateUsing(function($record){
                     //     // dd($record);
                     //     $gatepassProduct = GatePassHasProduct::where('product_id',$record->id)->sum('box');
