@@ -90,7 +90,9 @@ class ProductResource extends Resource
                     ->getStateUsing(static function (object $record, Table $table): int {
 
                         $getLot =   preg_split('/\D+/', $record->marka);
-                        return $getLot[0];
+                        $lotPart = $getLot[0] ?? '';
+
+                        return $lotPart;
                     })
                     ->searchable()
                     ->sortable(true),
