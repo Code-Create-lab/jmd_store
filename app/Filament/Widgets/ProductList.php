@@ -38,7 +38,9 @@ class ProductList extends BaseWidget
                     ->getStateUsing(static function (object $record, Table $table): int {
 
                         $getLot =   preg_split('/\D+/', $record->marka);
-                        return (int)$getLot[0];
+                        $lotPart = $getLot[0] ?? '';
+
+                        return $lotPart;
                     })
                     ->searchable()
                     ->sortable(true),
