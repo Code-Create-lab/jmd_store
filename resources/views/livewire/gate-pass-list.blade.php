@@ -1,5 +1,13 @@
 <div class="container mt-5">
     <h2>Gate Pass List</h2>
+
+    <div>
+        <label for="dateFrom">Date From:</label>
+        <input type="date" id="dateFrom" wire:change="filterGatepassData" wire:model="dateFrom">
+    
+        <label for="dateTo">Date To:</label>
+        <input type="date" id="dateTo" wire:change="filterGatepassData" wire:model="dateTo">
+    </div>
     <table id="example" class="table table-striped" style="width:100%">
         <thead>
             <tr>
@@ -45,10 +53,10 @@
                 <th>Summary</th>
                 <th></th>
                 <th></th>
-                <th id="total-quantity">Total Box: {{collect($gatepass)->sum('box')}}</th>
-                <th>{{$message}}</th>
-                <th id="total-price">Total Amount: ₹{{$totalAmount}} x {{$gst}} % </th>
-                <th> {{$totalAmountGST}} </th>
+                <th id="total-quantity">Total Box: {{ collect($gatepass)->sum('box') }}</th>
+                <th>{{ $message }}</th>
+                <th id="total-price">Total Amount: ₹{{ $totalAmount }} x {{ $gst }} % </th>
+                <th> {{ $totalAmountGST }} </th>
                 {{-- <th> <th> --}}
             </tr>
 
